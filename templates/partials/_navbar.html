@@ -1,4 +1,3 @@
-
 {% if 'synchronizer' in request.path %}
     <a href="{% url 'synchronizerabout' %}">about</a>
     <a href="{% url 'synchronizerhowto' %}">howto</a>
@@ -7,6 +6,7 @@
     <a href="{% url 'metronomeabout' %}">about</a>
     <a href="{% url 'metronomehowto' %}">howto</a>
     <a href="{% url 'generate' %}">generate</a>
+{% elif 'accounts' in request.path %}
 {% else %}
     <a href="{% url 'about' %}">about</a>
     <a href="{% url 'contact' %}">contact</a>
