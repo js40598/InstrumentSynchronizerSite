@@ -20,4 +20,5 @@ urlpatterns = [
     path('about/', views.about, name='synchronizerabout'),
     path('howto/', views.howto, name='synchronizerhowto'),
     path('synchronize/', views.synchronize, name='synchronize'),
+    path('projects/', views.projects, name='projects'),
 ]

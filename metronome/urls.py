@@ -20,4 +20,5 @@ urlpatterns = [
     path('about/', views.about, name='metronomeabout'),
     path('howto/', views.howto, name='metronomehowto'),
     path('generate/', views.generate, name='generate'),
+    path('metronomes/', views.metronomes, name='metronomes'),
 ]
