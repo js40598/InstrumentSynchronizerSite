@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.views import View
 
 
 def about(request):
@@ -11,9 +12,17 @@ def howto(request):
     return render(request, 'synchronizer/howto.html')
 
 
-def synchronize(request):
-    return render(request, 'synchronizer/synchronize.html')
+class Synchronize(View):
+    def get(self, request):
+        return render(request, 'synchronizer/synchronize.html')
+
+    def post(self, request):
+        return render(request, 'synchronizer/synchronize.html')
 
 
-def projects(request):
-    return render(request, 'synchronizer/projects.html')
+class Projects(View):
+    def get(self, request):
+        return render(request, 'synchronizer/projects.html')
+
+    def post(self, request):
+        return render(request, 'synchronizer/projects.html')

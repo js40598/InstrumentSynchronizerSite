@@ -19,6 +19,6 @@ from metronome import views
 urlpatterns = [
     path('about/', views.about, name='metronomeabout'),
     path('howto/', views.howto, name='metronomehowto'),
-    path('generate/', views.generate, name='generate'),
-    path('metronomes/', views.metronomes, name='metronomes'),
+    path('generate/', views.Generate.as_view(), name='generate'),
+    path('metronomes/', views.Metronomes.as_view(), name='metronomes'),
 ]

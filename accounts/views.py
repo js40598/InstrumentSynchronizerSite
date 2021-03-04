@@ -4,14 +4,23 @@ from django.shortcuts import render, redirect
 
 
 # Create your views here.
+from django.views import View
 
 
-def login(request):
-    return render(request, 'accounts/login.html')
+class Login(View):
+    def get(self, request):
+        return render(request, 'accounts/login.html')
+
+    def post(self, request):
+        return render(request, 'accounts/login.html')
 
 
-def register(request):
-    return render(request, 'accounts/register.html')
+class Register(View):
+    def get(self, request):
+        return render(request, 'accounts/register.html')
+
+    def post(self, request):
+        return render(request, 'accounts/register.html')
 
 
 @login_required

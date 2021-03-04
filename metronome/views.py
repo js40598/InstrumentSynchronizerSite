@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.views import View
 
 
 def about(request):
@@ -11,9 +12,17 @@ def howto(request):
     return render(request, 'metronome/howto.html')
 
 
-def generate(request):
-    return render(request, 'metronome/generate.html')
+class Generate(View):
+    def get(self, request):
+        return render(request, 'metronome/generate.html')
+
+    def post(self, request):
+        return render(request, 'metronome/generate.html')
 
 
-def metronomes(request):
-    return render(request, 'metronome/metronomes.html')
+class Metronomes(View):
+    def get(self, request):
+        return render(request, 'metronome/generate.html')
+
+    def post(self, request):
+        return render(request, 'metronome/generate.html')

@@ -19,6 +19,6 @@ from synchronizer import views
 urlpatterns = [
     path('about/', views.about, name='synchronizerabout'),
     path('howto/', views.howto, name='synchronizerhowto'),
-    path('synchronize/', views.synchronize, name='synchronize'),
-    path('projects/', views.projects, name='projects'),
+    path('synchronize/', views.Synchronize.as_view(), name='synchronize'),
+    path('projects/', views.Projects.as_view(), name='projects'),
 ]
