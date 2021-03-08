@@ -28,9 +28,6 @@ class Register(View):
 
 
 @login_required
-def logout(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('home')
-    else:
-        return redirect('home')
+def logoutuser(request):
+    logout(request)
+    return redirect('landing')
