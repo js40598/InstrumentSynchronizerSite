@@ -1,10 +1,8 @@
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-
-
-# Create your views here.
 from django.views import View
+from accounts.forms import RegisterForm
 
 
 class Login(View):
@@ -16,8 +14,14 @@ class Login(View):
 
 
 class Register(View):
+    register_form = RegisterForm
+
     def get(self, request):
-        return render(request, 'accounts/register.html')
+        form = self.register_form()
+        context = {
+            'form': form,
+        }
+        return render(request, 'accounts/register.html', context)
 
     def post(self, request):
         return render(request, 'accounts/register.html')
