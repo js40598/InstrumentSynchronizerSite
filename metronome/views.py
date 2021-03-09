@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.views import View
+from metronome.forms import MetronomeCreationForm
 
 # Create your views here.
-from django.views import View
 
 
 def about(request):
@@ -13,11 +14,19 @@ def howto(request):
 
 
 class Generate(View):
+    form = MetronomeCreationForm
+
     def get(self, request):
-        return render(request, 'metronome/generate.html')
+        context = {
+            'creation_form': self.form(),
+        }
+        return render(request, 'metronome/generate.html', context)
 
     def post(self, request):
-        return render(request, 'metronome/generate.html')
+        context = {
+            'creation_form': self.form(),
+        }
+        return render(request, 'metronome/generate.html', context)
 
 
 class Metronomes(View):
