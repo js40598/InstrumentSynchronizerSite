@@ -1,0 +1,3 @@
+[submodule "InstrumentSynchronizerSite/InstrumentSynchronizer"]
+	path = InstrumentSynchronizerSite/InstrumentSynchronizer
+	url = https://github.com/js40598/InstrumentSynchronizer.git
