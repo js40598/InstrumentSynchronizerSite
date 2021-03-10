@@ -11,9 +11,18 @@ class Tick(models.Model):
 
 
 class Metronome(models.Model):
+    POSSIBLE_FREQUENCIES = [('8000', 8000),
+                            ('11025', 11025),
+                            ('12000', 12000),
+                            ('16000', 16000),
+                            ('22050', 22050),
+                            ('24000', 24000),
+                            ('32000', 32000),
+                            ('44100', 44100),
+                            ('48000', 48000)]
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    frequency = models.PositiveIntegerField()
+    frequency = models.PositiveIntegerField(choices=POSSIBLE_FREQUENCIES)
     duration = models.PositiveIntegerField()
     bpm = models.PositiveIntegerField()
     tick = models.ForeignKey(Tick, on_delete=models.DO_NOTHING)
