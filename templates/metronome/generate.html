@@ -9,8 +9,20 @@
         {{ creation_form.duration }}<br>
         {{ creation_form.bpm.label }}<br>
         {{ creation_form.bpm }}<br>
+        {{ creation_form.stereo.label }}<br>
+        {{ creation_form.stereo }}<br>
         {{ creation_form.tick.label }}<br>
         {{ creation_form.tick }}<br>
-        <button type="submit">Generate</button><br>
+        <button type="submit" name="creation_submit">Generate</button><br>
     </form>
+    <br>
+    <br>
+    {% if save_form %}
+        Name this metronome to save it for another time!
+        <form method="POST">
+            {% csrf_token %}
+            {{ save_form.as_p }}<br>
+            <button type="submit" name="save_submit" value="{{ metronome }}">Save</button><br>
+        </form>
+    {% endif %}
 {% endblock %}
