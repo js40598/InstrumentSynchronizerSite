@@ -28,6 +28,10 @@
         </form>
     {% endif %}
     {% if generated_metronome_url %}
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Download</button>
+        </form>
          <audio controls>
              <source src="{% static generated_metronome_url %}" type="audio/wav">
          </audio>

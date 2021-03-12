@@ -6,6 +6,8 @@ from scipy.io.wavfile import write
 import os
 
 from InstrumentSynchronizerSite import settings
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.AudioFile import AudioFile
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.round_seconds_by_frequency import round_seconds_by_frequency
 from InstrumentSynchronizerSite.utils import decode_samples
 from metronome.forms import MetronomeCreationForm, MetronomeSaveForm
 from metronome.models import Metronome, Tick
@@ -20,6 +22,14 @@ def about(request):
 
 def howto(request):
     return render(request, 'metronome/howto.html')
+
+
+def download_metronome(request, metronome_name):
+    if request.method == 'POST':
+        with open(metronome_name, 'rb') as file:
+            response = HttpResponse(file.read(), content_type="application/wav")
+            response['Content-Disposition'] = 'inline; filename=' + metronome_name
+            return response
 
 
 class Generate(View):
@@ -40,7 +50,7 @@ class Generate(View):
                                                 'tick': request.POST['tick']}),
         }
 
-        if 'creation_submit' in request.POST:
+        if 'creation_submit' in request.POST or 'download_submit' in request.POST:
             # generate metronome (to develop)
             if request.user is not None:
                 context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
@@ -69,7 +79,10 @@ class Generate(View):
                                                         tick_values=metronome_tick_values,
                                                         stereo=request.POST.get('stereo', False))
                     write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
-                context['generated_metronome_url'] = 'metronomes/' + metronome_name
+                a = AudioFile(metronome_url)
+                a.convert('mp3', True)
+                context['generated_metronome_name'] = metronome_name
+                context['generated_metronome_url'] = a.directory
 
             return render(request, 'metronome/generate.html', context)
         elif 'save_submit' in request.POST:

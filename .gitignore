@@ -1,4 +1,9 @@
 *.wav
+*.mp3
+*.raw
+*.flv
+*.ogg
+*.m4a
 
 # Django #
 *.log
