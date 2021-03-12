@@ -21,4 +21,5 @@ urlpatterns = [
     path('howto/', views.howto, name='metronomehowto'),
     path('generate/', views.Generate.as_view(), name='generate'),
     path('metronomes/', views.Metronomes.as_view(), name='metronomes'),
+    path('download_metronome/<metronome_name>', views.download_metronome, name='download_metronome'),
 ]

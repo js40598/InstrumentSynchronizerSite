@@ -28,7 +28,7 @@
         </form>
     {% endif %}
     {% if generated_metronome_url %}
-        <form method="POST">
+        <form method="POST" action="{% url 'download_metronome' generated_metronome_name %}">
             {% csrf_token %}
             <button type="submit">Download</button>
         </form>

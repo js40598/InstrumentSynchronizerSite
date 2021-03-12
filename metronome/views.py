@@ -1,17 +1,18 @@
+import os
+
+import numpy as np
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
-import numpy as np
 from scipy.io.wavfile import write
-import os
 
 from InstrumentSynchronizerSite import settings
 from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.AudioFile import AudioFile
-from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.round_seconds_by_frequency import round_seconds_by_frequency
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.Metronome import Metronome as MetronomeFile
 from InstrumentSynchronizerSite.utils import decode_samples
 from metronome.forms import MetronomeCreationForm, MetronomeSaveForm
 from metronome.models import Metronome, Tick
-from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.Metronome import Metronome as MetronomeFile
+
 
 # Create your views here.
 
@@ -26,7 +27,7 @@ def howto(request):
 
 def download_metronome(request, metronome_name):
     if request.method == 'POST':
-        with open(metronome_name, 'rb') as file:
+        with open(os.path.join(Generate.output_dir, metronome_name), 'rb') as file:
             response = HttpResponse(file.read(), content_type="application/wav")
             response['Content-Disposition'] = 'inline; filename=' + metronome_name
             return response
@@ -34,6 +35,7 @@ def download_metronome(request, metronome_name):
 
 class Generate(View):
     form = MetronomeCreationForm
+    output_dir = os.path.join(settings.BASE_DIR, 'InstrumentSynchronizerSite', 'static', 'metronomes')
 
     def get(self, request):
         context = {
@@ -81,6 +83,7 @@ class Generate(View):
                     write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
                 a = AudioFile(metronome_url)
                 a.convert('mp3', True)
+                metronome_name = metronome_name[:-3] + a.format
                 context['generated_metronome_name'] = metronome_name
                 context['generated_metronome_url'] = a.directory
 
@@ -89,7 +92,7 @@ class Generate(View):
             # save metronome (to develop)
             metronome = Metronome(title=request.POST['title'],
                                   user=request.user,
-                                  frequency=request.POST['frequency'],
+                                  frequency=request.POST['frequency'][1],
                                   duration=request.POST['duration'],
                                   bpm=request.POST['bpm'],
                                   tick=Tick.objects.get(title=request.POST['tick']),
