@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
     <form method="POST">
         {% csrf_token %}
@@ -24,5 +26,10 @@
             {{ save_form.as_p }}<br>
             <button type="submit" name="save_submit" value="{{ metronome }}">Save</button><br>
         </form>
+    {% endif %}
+    {% if generated_metronome_url %}
+         <audio controls>
+             <source src="{% static generated_metronome_url %}" type="audio/wav">
+         </audio>
     {% endif %}
 {% endblock %}

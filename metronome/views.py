@@ -53,9 +53,14 @@ class Generate(View):
                 metronome_name = 'Metronome{}Hz{}sec{}bpm{}{}.wav'.format(request.POST['frequency'],
                                                                           request.POST['duration'],
                                                                           request.POST['bpm'],
-                                                                          request.POST.get('stereo', False),
+                                                                          request.POST.get('stereo', ''),
                                                                           request.POST['tick'])
-                if os.path.exists(metronome_name):
+                metronome_url = os.path.join(settings.BASE_DIR,
+                                             'InstrumentSynchronizerSite',
+                                             'static',
+                                             'metronomes',
+                                             metronome_name)
+                if os.path.exists(metronome_url):
                     pass
                 else:
                     generated_metronome = MetronomeFile(frequency=int(request.POST['frequency']),
@@ -63,8 +68,8 @@ class Generate(View):
                                                         bpm=int(request.POST['bpm']),
                                                         tick_values=metronome_tick_values,
                                                         stereo=request.POST.get('stereo', False))
-                    write(metronome_name, generated_metronome.frequency, generated_metronome.samples)
-                context['generated_metronome_url'] = metronome_name
+                    write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
+                context['generated_metronome_url'] = 'metronomes/' + metronome_name
 
             return render(request, 'metronome/generate.html', context)
         elif 'save_submit' in request.POST:
