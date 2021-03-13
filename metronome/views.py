@@ -64,18 +64,27 @@ class Generate(View):
                                      metronome_name)
 
         if 'creation_submit' in request.POST:
-            if not os.path.exists(metronome_url[:-3]+'mp3'):
-                if not os.path.exists(metronome_url):
-                    selected_tick = Tick.objects.get(title=request.POST['tick'])
-                    metronome_tick_values = np.array(decode_samples(selected_tick.values))
-                    generated_metronome = MetronomeFile(frequency=int(request.POST['frequency']),
-                                                        duration=int(request.POST['duration']),
-                                                        bpm=int(request.POST['bpm']),
-                                                        tick_values=metronome_tick_values,
-                                                        stereo=request.POST.get('stereo', False))
-                    write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
-                a = AudioFile(metronome_url)
-                a.convert('mp3', True)
+            validate_form = MetronomeCreationForm(data={'frequency': request.POST['frequency'],
+                                                        'duration': request.POST['duration'],
+                                                        'bpm': request.POST['bpm'],
+                                                        'tick': Tick.objects.get(id=request.POST['tick']),
+                                                        'stereo': True if request.POST.get('stereo') else False})
+            if validate_form.is_valid():
+                if not os.path.exists(metronome_url[:-3]+'mp3'):
+                    if not os.path.exists(metronome_url):
+                        selected_tick = Tick.objects.get(id=request.POST['tick'])
+                        metronome_tick_values = np.array(decode_samples(selected_tick.values))
+                        generated_metronome = MetronomeFile(frequency=int(request.POST['frequency']),
+                                                            duration=int(request.POST['duration']),
+                                                            bpm=int(request.POST['bpm']),
+                                                            tick_values=metronome_tick_values,
+                                                            stereo=request.POST.get('stereo', False))
+                        write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
+                    a = AudioFile(metronome_url)
+                    a.convert('mp3', True)
+            else:
+                context['errors'] = validate_form.errors
+                return render(request, 'metronome/generate.html', context)
         metronome_url = metronome_url[:-3]+'mp3'
         metronome_name = metronome_name[:-3]+'mp3'
         context['generated_metronome_name'] = metronome_name

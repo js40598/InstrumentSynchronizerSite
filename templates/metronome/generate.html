@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block content %}
+    {{ errors }}
     <form method="POST">
         {% csrf_token %}
         {{ creation_form.frequency.label }}<br>
