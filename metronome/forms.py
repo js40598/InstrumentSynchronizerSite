@@ -16,10 +16,11 @@ class MetronomeCreationForm(forms.ModelForm):
 class MetronomeSaveForm(forms.ModelForm):
     class Meta:
         model = Metronome
-        fields = ['title', 'frequency', 'duration', 'bpm', 'tick', 'stereo']
-        widgets = {'frequency': forms.HiddenInput(),
+        fields = ['title', 'frequency', 'duration', 'bpm', 'tick', 'stereo', 'user']
+        widgets = {
                    'duration': forms.HiddenInput(),
                    'bpm': forms.HiddenInput(),
                    'tick': forms.HiddenInput(),
                    'stereo': forms.HiddenInput(),
+                   'user': forms.HiddenInput(),
                    }

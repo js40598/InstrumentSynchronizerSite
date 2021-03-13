@@ -22,8 +22,11 @@ class Metronome(models.Model):
                             ('48000', 48000)]
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    frequency = models.PositiveIntegerField(choices=POSSIBLE_FREQUENCIES)
+    frequency = models.CharField(max_length=5, choices=POSSIBLE_FREQUENCIES)
     duration = models.PositiveIntegerField()
     bpm = models.PositiveIntegerField()
     tick = models.ForeignKey(Tick, on_delete=models.DO_NOTHING)
     stereo = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = [['user', 'title']]

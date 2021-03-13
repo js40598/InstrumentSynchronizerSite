@@ -82,14 +82,29 @@ class Generate(View):
         context['generated_metronome_url'] = metronome_url
 
         if 'save_submit' in request.POST:
-            metronome = Metronome(title=request.POST['title'],
-                                  user=request.user,
-                                  frequency=request.POST['frequency'][1],
-                                  duration=request.POST['duration'],
-                                  bpm=request.POST['bpm'],
-                                  tick=Tick.objects.get(title=request.POST['tick']),
-                                  stereo=request.POST['stereo'])
-            metronome.save()
+            validate_form = MetronomeSaveForm(data={'title': request.POST['title'],
+                                                    'frequency': request.POST['frequency'],
+                                                    'duration': request.POST['duration'],
+                                                    'bpm': request.POST['bpm'],
+                                                    'tick': Tick.objects.get(title=request.POST['tick']),
+                                                    'stereo': True if request.POST.get('stereo') else False,
+                                                    'user': request.user})
+            if validate_form.is_valid():
+                metronome = Metronome(title=request.POST['title'],
+                                      user=request.user,
+                                      frequency=request.POST['frequency'],
+                                      duration=request.POST['duration'],
+                                      bpm=request.POST['bpm'],
+                                      tick=Tick.objects.get(title=request.POST['tick']),
+                                      stereo=request.POST['stereo'])
+                metronome.save()
+            else:
+                context['errors'] = validate_form.errors
+                context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
+                                                                  'duration': request.POST['duration'],
+                                                                  'bpm': request.POST['bpm'],
+                                                                  'tick': request.POST['tick'],
+                                                                  'user': request.user})
             # potentially to develop
             # redirect to metronomes/<metronome> or clear title input + message or hide save form
             # for now hide form
@@ -98,7 +113,8 @@ class Generate(View):
                 context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
                                                                   'duration': request.POST['duration'],
                                                                   'bpm': request.POST['bpm'],
-                                                                  'tick': request.POST['tick']})
+                                                                  'tick': request.POST['tick'],
+                                                                  'user': request.user})
 
         return render(request, 'metronome/generate.html', context)
 
