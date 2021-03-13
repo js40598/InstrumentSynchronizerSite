@@ -44,37 +44,30 @@ class Generate(View):
         return render(request, 'metronome/generate.html', context)
 
     def post(self, request):
-        context = {
-            'creation_form': self.form(initial={'frequency': request.POST['frequency'],
-                                                'duration': request.POST['duration'],
-                                                'bpm': request.POST['bpm'],
-                                                'stereo': request.POST.get('stereo', False),
-                                                'tick': request.POST['tick']}),
-        }
+        context = {'creation_form': self.form(initial={'frequency': request.POST['frequency'],
+                                                       'duration': request.POST['duration'],
+                                                       'bpm': request.POST['bpm'],
+                                                       'stereo': request.POST.get('stereo', False),
+                                                       'tick': request.POST['tick']})}
+        # to develop
+        # if 'creation_submit' in request.POST:
+            # if not valid: render message
+        metronome_name = 'Metronome{}Hz{}sec{}bpm{}{}.wav'.format(request.POST['frequency'],
+                                                                  request.POST['duration'],
+                                                                  request.POST['bpm'],
+                                                                  'Stereo' if request.POST['stereo'] else '',
+                                                                  request.POST['tick'])
+        metronome_url = os.path.join(settings.BASE_DIR,
+                                     'InstrumentSynchronizerSite',
+                                     'static',
+                                     'metronomes',
+                                     metronome_name)
 
-        if 'creation_submit' in request.POST or 'download_submit' in request.POST:
-            # generate metronome (to develop)
-            if request.user is not None:
-                context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
-                                                                  'duration': request.POST['duration'],
-                                                                  'bpm': request.POST['bpm'],
-                                                                  'tick': request.POST['tick']})
-
-                metronome_tick_values = np.array(decode_samples(Tick.objects.get(title=request.POST['tick']).values))
-
-                metronome_name = 'Metronome{}Hz{}sec{}bpm{}{}.wav'.format(request.POST['frequency'],
-                                                                          request.POST['duration'],
-                                                                          request.POST['bpm'],
-                                                                          request.POST.get('stereo', ''),
-                                                                          request.POST['tick'])
-                metronome_url = os.path.join(settings.BASE_DIR,
-                                             'InstrumentSynchronizerSite',
-                                             'static',
-                                             'metronomes',
-                                             metronome_name)
-                if os.path.exists(metronome_url):
-                    pass
-                else:
+        if 'creation_submit' in request.POST:
+            if not os.path.exists(metronome_url[:-3]+'mp3'):
+                if not os.path.exists(metronome_url):
+                    selected_tick = Tick.objects.get(title=request.POST['tick'])
+                    metronome_tick_values = np.array(decode_samples(selected_tick.values))
                     generated_metronome = MetronomeFile(frequency=int(request.POST['frequency']),
                                                         duration=int(request.POST['duration']),
                                                         bpm=int(request.POST['bpm']),
@@ -83,13 +76,12 @@ class Generate(View):
                     write(metronome_url, generated_metronome.frequency, generated_metronome.samples)
                 a = AudioFile(metronome_url)
                 a.convert('mp3', True)
-                metronome_name = metronome_name[:-3] + a.format
-                context['generated_metronome_name'] = metronome_name
-                context['generated_metronome_url'] = a.directory
+        metronome_url = metronome_url[:-3]+'mp3'
+        metronome_name = metronome_name[:-3]+'mp3'
+        context['generated_metronome_name'] = metronome_name
+        context['generated_metronome_url'] = metronome_url
 
-            return render(request, 'metronome/generate.html', context)
-        elif 'save_submit' in request.POST:
-            # save metronome (to develop)
+        if 'save_submit' in request.POST:
             metronome = Metronome(title=request.POST['title'],
                                   user=request.user,
                                   frequency=request.POST['frequency'][1],
@@ -97,6 +89,16 @@ class Generate(View):
                                   bpm=request.POST['bpm'],
                                   tick=Tick.objects.get(title=request.POST['tick']),
                                   stereo=request.POST['stereo'])
+            metronome.save()
+            # potentially to develop
+            # redirect to metronomes/<metronome> or clear title input + message or hide save form
+            # for now hide form
+        else:
+            if request.user is not None:
+                context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
+                                                                  'duration': request.POST['duration'],
+                                                                  'bpm': request.POST['bpm'],
+                                                                  'tick': request.POST['tick']})
 
         return render(request, 'metronome/generate.html', context)
 
