@@ -1,5 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    metronomes
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Duration</th>
+            <th>BPM</th>
+            <th>Tick</th>
+            <th>Frequency</th>
+        </tr>
+        {% for metronome in metronomes %}
+            <tr>
+                <td>{{ metronome.title }}</td>
+                <td>{{ metronome.duration }}</td>
+                <td>{{ metronome.bpm }}</td>
+                <td>{{ metronome.tick }}</td>
+                <td>{{ metronome.frequency }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

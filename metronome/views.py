@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -127,7 +128,9 @@ class Generate(View):
 
 class Metronomes(View):
     def get(self, request):
-        return render(request, 'metronome/generate.html')
+        metronomes = Metronome.objects.filter(user=request.user)
+        context = {'metronomes': metronomes}
+        return render(request, 'metronome/metronomes.html', context)
 
     def post(self, request):
-        return render(request, 'metronome/generate.html')
+        return render(request, 'metronome/metronomes.html')

@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from metronome import views
 
@@ -20,6 +21,6 @@ urlpatterns = [
     path('about/', views.about, name='metronomeabout'),
     path('howto/', views.howto, name='metronomehowto'),
     path('generate/', views.Generate.as_view(), name='generate'),
-    path('metronomes/', views.Metronomes.as_view(), name='metronomes'),
+    path('metronomes/', login_required(views.Metronomes.as_view()), name='metronomes'),
     path('download_metronome/<metronome_name>', views.download_metronome, name='download_metronome'),
 ]
