@@ -4,6 +4,18 @@ from django.db import models
 # Create your models here.
 
 
+class PositiveIntegerRangeField(models.PositiveIntegerField):
+    def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
+        self.min_value = min_value
+        self.max_value = max_value
+        models.IntegerField.__init__(self, verbose_name, name, **kwargs)
+
+    def formfield(self, **kwargs):
+        defaults = {'min_value': self.min_value, 'max_value': self.max_value}
+        defaults.update(kwargs)
+        return super(PositiveIntegerRangeField, self).formfield(**defaults)
+
+
 class Tick(models.Model):
     title = models.CharField(max_length=100)
     file = models.FileField(upload_to='ticks/')
@@ -23,8 +35,8 @@ class Metronome(models.Model):
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     frequency = models.CharField(max_length=5, choices=POSSIBLE_FREQUENCIES)
-    duration = models.PositiveIntegerField()
-    bpm = models.PositiveIntegerField()
+    duration = PositiveIntegerRangeField(min_value=1, max_value=300)
+    bpm = PositiveIntegerRangeField(min_value=1, max_value=600)
     tick = models.ForeignKey(Tick, on_delete=models.DO_NOTHING)
     stereo = models.BooleanField(default=False)
 
