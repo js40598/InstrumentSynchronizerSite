@@ -22,9 +22,15 @@
                 <td>
                     <form method="POST">
                         {% csrf_token %}
-                        <button name="delete_id" type="submit" value="{{ metronome.metronome.id }}">
-                            ✗
-                        </button>
+                        {% if metronome.metronome.id is delete_id %}
+                            <button name="confirm_id" type="submit" value="{{ metronome.metronome.id }}">
+                                ✗
+                            </button>
+                        {% else %}
+                            <button name="delete_id" type="submit" value="{{ metronome.metronome.id }}">
+                                ✗
+                            </button>
+                        {% endif %}
                     </form>
                 </td>
                 <td>

@@ -144,7 +144,9 @@ class Metronomes(View):
         return render(request, 'metronome/metronomes.html', context)
 
     def post(self, request):
-        delete_metronome = Metronome.objects.get(user=request.user, id=request.POST['delete_id'])
-        delete_metronome.delete()
-        context = {'metronomes': self.query(request.user)}
+        if 'confirm_id' in request.POST:
+            delete_metronome = Metronome.objects.get(user=request.user, id=request.POST['delete_id'])
+            delete_metronome.delete()
+        context = {'metronomes': self.query(request.user),
+                   'delete_id': int(request.POST.get('delete_id', 0))}
         return render(request, 'metronome/metronomes.html', context)
