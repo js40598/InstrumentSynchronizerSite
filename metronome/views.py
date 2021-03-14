@@ -116,7 +116,7 @@ class Generate(View):
             # redirect to metronomes/<metronome> or clear title input + message or hide save form
             # for now hide form
         else:
-            if request.user is not None:
+            if not request.user.is_anonymous:
                 if request.POST.get('creation_submit', 'view') != 'view':
                     context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
                                                                       'duration': request.POST['duration'],
