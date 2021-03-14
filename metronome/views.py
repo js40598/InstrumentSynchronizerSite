@@ -49,14 +49,11 @@ class Generate(View):
                                                        'bpm': request.POST['bpm'],
                                                        'stereo': request.POST.get('stereo', False),
                                                        'tick': request.POST['tick']})}
-        # to develop
-        # if 'creation_submit' in request.POST:
-            # if not valid: render message
         metronome_name = 'Metronome{}Hz{}sec{}bpm{}{}.wav'.format(request.POST['frequency'],
                                                                   request.POST['duration'],
                                                                   request.POST['bpm'],
                                                                   'Stereo' if request.POST['stereo'] else '',
-                                                                  request.POST['tick'])
+                                                                  Tick.objects.get(id=request.POST['tick']).title)
         metronome_url = os.path.join(settings.BASE_DIR,
                                      'InstrumentSynchronizerSite',
                                      'static',
@@ -67,7 +64,7 @@ class Generate(View):
             validate_form = MetronomeCreationForm(data={'frequency': request.POST['frequency'],
                                                         'duration': request.POST['duration'],
                                                         'bpm': request.POST['bpm'],
-                                                        'tick': Tick.objects.get(id=request.POST['tick']),
+                                                        'tick': request.POST['tick'],
                                                         'stereo': True if request.POST.get('stereo') else False})
             if validate_form.is_valid():
                 if not os.path.exists(metronome_url[:-3]+'mp3'):
@@ -95,7 +92,7 @@ class Generate(View):
                                                     'frequency': request.POST['frequency'],
                                                     'duration': request.POST['duration'],
                                                     'bpm': request.POST['bpm'],
-                                                    'tick': Tick.objects.get(title=request.POST['tick']),
+                                                    'tick': Tick.objects.get(id=request.POST['tick']),
                                                     'stereo': True if request.POST.get('stereo') else False,
                                                     'user': request.user})
             if validate_form.is_valid():
@@ -104,7 +101,7 @@ class Generate(View):
                                       frequency=request.POST['frequency'],
                                       duration=request.POST['duration'],
                                       bpm=request.POST['bpm'],
-                                      tick=Tick.objects.get(title=request.POST['tick']),
+                                      tick=Tick.objects.get(id=request.POST['tick']),
                                       stereo=request.POST['stereo'])
                 metronome.save()
             else:

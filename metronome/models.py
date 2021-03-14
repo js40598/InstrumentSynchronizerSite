@@ -29,4 +29,4 @@ class Metronome(models.Model):
     stereo = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = [['user', 'title']]
+        unique_together = [['user', 'title'], ['user', 'frequency', 'duration', 'bpm', 'tick', 'stereo']]
