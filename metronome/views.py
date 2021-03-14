@@ -133,4 +133,8 @@ class Metronomes(View):
         return render(request, 'metronome/metronomes.html', context)
 
     def post(self, request):
-        return render(request, 'metronome/metronomes.html')
+        delete_metronome = Metronome.objects.get(user=request.user, id=request.POST['delete_id'])
+        delete_metronome.delete()
+        metronomes = Metronome.objects.filter(user=request.user)
+        context = {'metronomes': metronomes}
+        return render(request, 'metronome/metronomes.html', context)
