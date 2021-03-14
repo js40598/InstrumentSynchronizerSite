@@ -117,24 +117,34 @@ class Generate(View):
             # for now hide form
         else:
             if request.user is not None:
-                context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
-                                                                  'duration': request.POST['duration'],
-                                                                  'bpm': request.POST['bpm'],
-                                                                  'tick': request.POST['tick'],
-                                                                  'user': request.user})
+                if request.POST.get('creation_submit', 'view') != 'view':
+                    context['save_form'] = MetronomeSaveForm(initial={'frequency': request.POST['frequency'],
+                                                                      'duration': request.POST['duration'],
+                                                                      'bpm': request.POST['bpm'],
+                                                                      'tick': request.POST['tick'],
+                                                                      'user': request.user})
 
         return render(request, 'metronome/generate.html', context)
 
 
 class Metronomes(View):
+    def query(self, user):
+        metronomes = []
+        for metronome in Metronome.objects.filter(user=user):
+            form = MetronomeSaveForm(initial={'frequency': metronome.frequency,
+                                              'duration': metronome.duration,
+                                              'bpm': metronome.bpm,
+                                              'stereo': metronome.stereo,
+                                              'tick': metronome.tick})
+            metronomes.append({'metronome': metronome, 'form': form})
+        return metronomes
+
     def get(self, request):
-        metronomes = Metronome.objects.filter(user=request.user)
-        context = {'metronomes': metronomes}
+        context = {'metronomes': self.query(request.user)}
         return render(request, 'metronome/metronomes.html', context)
 
     def post(self, request):
         delete_metronome = Metronome.objects.get(user=request.user, id=request.POST['delete_id'])
         delete_metronome.delete()
-        metronomes = Metronome.objects.filter(user=request.user)
-        context = {'metronomes': metronomes}
+        context = {'metronomes': self.query(request.user)}
         return render(request, 'metronome/metronomes.html', context)

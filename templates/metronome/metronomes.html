@@ -10,18 +10,32 @@
             <th>Tick</th>
             <th>Frequency</th>
             <th>Delete</th>
+            <th>View</th>
         </tr>
         {% for metronome in metronomes %}
             <tr>
-                <td>{{ metronome.title }}</td>
-                <td>{{ metronome.duration }}s</td>
-                <td>{{ metronome.bpm }}</td>
-                <td>{{ metronome.tick }}</td>
-                <td>{{ metronome.frequency }}Hz</td>
+                <td>{{ metronome.metronome.title }}</td>
+                <td>{{ metronome.metronome.duration }}s</td>
+                <td>{{ metronome.metronome.bpm }}</td>
+                <td>{{ metronome.metronome.tick }}</td>
+                <td>{{ metronome.metronome.frequency }}Hz</td>
                 <td>
                     <form method="POST">
                         {% csrf_token %}
-                        <button name="delete_id" type="submit" value="{{ metronome.id }}">
+                        <button name="delete_id" type="submit" value="{{ metronome.metronome.id }}">
+                            ✗
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" action="{% url 'generate' %}">
+                        {% csrf_token %}
+                        {{ metronome.form.frequency }}
+                        {{ metronome.form.duration }}
+                        {{ metronome.form.bpm }}
+                        {{ metronome.form.stereo }}
+                        {{ metronome.form.tick }}
+                        <button name="creation_submit" type="submit" value="view">
                             ✗
                         </button>
                     </form>
