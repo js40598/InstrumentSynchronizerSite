@@ -12,17 +12,17 @@ def howto(request):
     return render(request, 'synchronizer/howto.html')
 
 
-class Synchronize(View):
-    def get(self, request):
-        return render(request, 'synchronizer/synchronize.html')
-
-    def post(self, request):
-        return render(request, 'synchronizer/synchronize.html')
-
-
 class Projects(View):
     def get(self, request):
         return render(request, 'synchronizer/projects.html')
 
     def post(self, request):
         return render(request, 'synchronizer/projects.html')
+
+
+class Project(View):
+    def get(self, request):
+        return render(request, 'synchronizer/synchronize.html')
+
+    def post(self, request):
+        return render(request, 'synchronizer/synchronize.html')

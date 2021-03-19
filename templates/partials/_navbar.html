@@ -1,7 +1,6 @@
 {% if 'synchronizer' in request.path %}
     <a href="{% url 'synchronizerabout' %}">about</a>
     <a href="{% url 'synchronizerhowto' %}">howto</a>
-    <a href="{% url 'synchronize' %}">synchronize</a>
     {% if user.is_authenticated %}
         <a href="{% url 'projects' %}">my projects</a>
     {% endif %}
