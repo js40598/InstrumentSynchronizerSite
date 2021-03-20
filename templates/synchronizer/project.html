@@ -14,6 +14,7 @@
             <th>Identifier</th>
             <th>Pitch</th>
             <th>Author</th>
+            <th>Delete</th>
         </tr>
         {% for recording in project.recordings.all %}
             <tr>
@@ -21,6 +22,20 @@
                 <td>{{ recording.identifier }}</td>
                 <td>{{ recording.pitch }}</td>
                 <td>{{ recording.author }}</td>
+                <td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if recording.id is delete_id %}
+                            <button name="confirm_id" type="submit" value="{{ recording.id }}">
+                                ✗
+                            </button>
+                        {% else %}
+                            <button name="delete_id" type="submit" value="{{ recording.id }}">
+                                ✗
+                            </button>
+                        {% endif %}
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

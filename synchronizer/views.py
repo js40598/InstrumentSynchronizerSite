@@ -60,7 +60,12 @@ class Project(View):
 
     def post(self, request, project_slug):
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
-        context = {'project': project}
+        if 'confirm_id' in request.POST:
+            recording = Recording.objects.get(id=request.POST['confirm_id'], project=project)
+            recording.delete()
+
+        context = {'project': project,
+                   'delete_id': int(request.POST.get('delete_id', 0))}
         return render(request, 'synchronizer/project.html', context)
 
 
