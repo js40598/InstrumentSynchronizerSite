@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views import View
-from synchronizer.forms import ProjectCreationForm
+from synchronizer.forms import ProjectCreationForm, RecordingAddForm
 from synchronizer.models import Project as ProjectModel
 from synchronizer.models import Recording
 
@@ -25,7 +25,7 @@ class Projects(View):
         if 'confirm_id' in request.POST:
             project = ProjectModel.objects.get(id=request.POST['confirm_id'], user=request.user)
             project.delete()
-        context = {'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date'),
+        context = {'projects': ProjectModel.objects.filter(user=request.user).order_by('-edition_date'),
                    'delete_id': int(request.POST.get('delete_id', 0))}
         return render(request, 'synchronizer/projects.html', context)
 
@@ -52,8 +52,25 @@ class Create(View):
 
 
 class Project(View):
-    def get(self, request, project_name):
-        return render(request, 'synchronizer/project.html')
+    form = RecordingAddForm
 
-    def post(self, request, project_name):
-        return render(request, 'synchronizer/project.html')
+    def get(self, request, project_title):
+        project = ProjectModel.objects.get(title=project_title, user=request.user)
+        context = {'project': project,
+                   'form': self.form()}
+        return render(request, 'synchronizer/project.html', context)
+
+    def post(self, request, project_title):
+        project = ProjectModel.objects.get(title=project_title, user=request.user)
+        form = self.form(files=request.FILES, data={'instrument': request.POST['instrument'],
+                                                    'identifier': request.POST['identifier'],
+                                                    'pitch': request.POST['pitch'],
+                                                    'author': request.POST['author'],
+                                                    'project': project})
+        if form.is_valid():
+            recording = Recording(**form.cleaned_data)
+            recording.save()
+            return redirect('project', project_title)
+        context = {'project': project,
+                   'form': form}
+        return render(request, 'synchronizer/project.html', context)

@@ -1,5 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    synchronize
+    {{ project.title }}<br>
+    {{ project.description }}<br>
+    {{ project.bpm }}<br>
+    <br>
+
+    <table>
+        <tr>
+            <th>Instrument</th>
+            <th>Identifier</th>
+            <th>Pitch</th>
+            <th>Author</th>
+        </tr>
+        {% for recording in project.recordings.all %}
+            <tr>
+                <td>{{ recording.instrument }}</td>
+                <td>{{ recording.identifier }}</td>
+                <td>{{ recording.pitch }}</td>
+                <td>{{ recording.author }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.file.label }}<br>
+        {{ form.file }}<br>
+        {{ form.instrument.label }}<br>
+        {{ form.instrument }}<br>
+        {{ form.identifier.label }}<br>
+        {{ form.identifier }}<br>
+        {{ form.pitch.label }}<br>
+        {{ form.pitch }}<br>
+        {{ form.author.label }}<br>
+        {{ form.author }}<br>
+        <button type="submit">Add</button>
+    </form>
 {% endblock %}

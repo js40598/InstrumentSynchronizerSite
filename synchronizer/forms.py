@@ -10,3 +10,11 @@ class ProjectCreationForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['title', 'description', 'user']
+
+
+class RecordingAddForm(forms.ModelForm):
+    file = forms.FileField()
+
+    class Meta:
+        model = Recording
+        fields = ['file', 'instrument', 'identifier', 'pitch', 'author', 'project']

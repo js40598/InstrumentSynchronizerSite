@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
+
+from django.utils.text import slugify
+
 from metronome.models import PositiveIntegerRangeField
 
 # Create your models here.
@@ -28,8 +31,8 @@ class Project(models.Model):
 class Recording(models.Model):
     project = models.ForeignKey(Project, related_name='recordings', on_delete=models.CASCADE)
     file = models.FileField(upload_to='recordings/')
-    instrument = models.CharField(max_length=100)
+    instrument = models.CharField(max_length=100, blank=True)
     identifier = models.CharField(max_length=100, blank=True)
     pitch = models.CharField(max_length=100, blank=True)
     author = models.CharField(max_length=100, blank=True)
-    samples = models.TextField()
+    samples = models.TextField(blank=True)
