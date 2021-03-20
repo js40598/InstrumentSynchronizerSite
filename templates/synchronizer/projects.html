@@ -1,16 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ creation_form.title.label }}<br>
-        {{ creation_form.title }}<br>
-        {{ creation_form.description.label }}<br>
-        {{ creation_form.description }}<br>
-        {{ errors }}
-        <button type="submit" name="creation_submit">Create</button>
-    </form>
-
+    <a href="{% url 'create_project' %}">Create new project!</a>
     <table>
         <tr>
             <th>Title</th>

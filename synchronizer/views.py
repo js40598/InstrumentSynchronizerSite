@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views import View
@@ -17,30 +17,38 @@ def howto(request):
 
 class Projects(View):
     def get(self, request):
-        projects = ProjectModel.objects.filter(user=request.user).order_by('edition_date')
-        creation_form = ProjectCreationForm()
-        context = {'creation_form': creation_form,
-                   'projects': projects}
+        projects = ProjectModel.objects.filter(user=request.user).order_by('-edition_date')
+        context = {'projects': projects}
         return render(request, 'synchronizer/projects.html', context)
 
     def post(self, request):
-        creation_form = ProjectCreationForm()
-        if 'creation_submit' in request.POST:
-            creation_form = ProjectCreationForm(data={'user': request.user,
-                                                      'title': request.POST['title'],
-                                                      'description': request.POST['description'],
-                                                      })
-            if creation_form.is_valid():
-                project = ProjectModel(**creation_form.cleaned_data)
-                project.save()
-        elif 'confirm_id' in request.POST:
+        if 'confirm_id' in request.POST:
             project = ProjectModel.objects.get(id=request.POST['confirm_id'], user=request.user)
             project.delete()
-        context = {'creation_form': creation_form,
-                   'errors': creation_form.errors,
-                   'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date'),
+        context = {'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date'),
                    'delete_id': int(request.POST.get('delete_id', 0))}
         return render(request, 'synchronizer/projects.html', context)
+
+
+class Create(View):
+    form = ProjectCreationForm
+
+    def get(self, request):
+        context = {'creation_form': self.form()}
+        return render(request, 'synchronizer/create_project.html', context)
+
+    def post(self, request):
+        creation_form = self.form(data={'user': request.user,
+                                        'title': request.POST['title'],
+                                        'description': request.POST['description'],
+                                        })
+        if creation_form.is_valid():
+            project = ProjectModel(**creation_form.cleaned_data)
+            project.save()
+            return redirect('projects')
+        context = {'creation_form': creation_form,
+                   'errors': creation_form.errors}
+        return render(request, 'synchronizer/create_project.html', context)
 
 
 class Project(View):
