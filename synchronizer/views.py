@@ -17,8 +17,10 @@ def howto(request):
 
 class Projects(View):
     def get(self, request):
+        projects = ProjectModel.objects.filter(user=request.user).order_by('edition_date')
         creation_form = ProjectCreationForm()
-        context = {'creation_form': creation_form}
+        context = {'creation_form': creation_form,
+                   'projects': projects}
         return render(request, 'synchronizer/projects.html', context)
 
     def post(self, request):
@@ -30,7 +32,8 @@ class Projects(View):
             project = ProjectModel(**creation_form.cleaned_data)
             project.save()
         context = {'creation_form': creation_form,
-                   'errors': creation_form.errors}
+                   'errors': creation_form.errors,
+                   'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date')}
         return render(request, 'synchronizer/projects.html', context)
 
 
