@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <br>
+    {{ project.title }}<br>
+    {{ project.description }}<br>
+    {{ project.bpm }}<br>
+    <br>
+    <a href="{% url 'project' project.slug %}">Back</a>
+    <br>
+    <br>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.file.label }}<br>
+        {{ form.file }}<br>
+        {{ form.instrument.label }}<br>
+        {{ form.instrument }}<br>
+        {{ form.identifier.label }}<br>
+        {{ form.identifier }}<br>
+        {{ form.pitch.label }}<br>
+        {{ form.pitch }}<br>
+        {{ form.author.label }}<br>
+        {{ form.author }}<br>
+        <button type="submit">Add</button>
+    </form>
+{% endblock %}

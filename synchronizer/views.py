@@ -30,7 +30,7 @@ class Projects(View):
         return render(request, 'synchronizer/projects.html', context)
 
 
-class Create(View):
+class CreateProject(View):
     form = ProjectCreationForm
 
     def get(self, request):
@@ -53,13 +53,25 @@ class Create(View):
 
 
 class Project(View):
+    def get(self, request, project_slug):
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+        context = {'project': project}
+        return render(request, 'synchronizer/project.html', context)
+
+    def post(self, request, project_slug):
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+        context = {'project': project}
+        return render(request, 'synchronizer/project.html', context)
+
+
+class AddRecording(View):
     form = RecordingAddForm
 
     def get(self, request, project_slug):
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         context = {'project': project,
                    'form': self.form()}
-        return render(request, 'synchronizer/project.html', context)
+        return render(request, 'synchronizer/add_recording.html', context)
 
     def post(self, request, project_slug):
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
@@ -74,4 +86,4 @@ class Project(View):
             return redirect('project', project_slug)
         context = {'project': project,
                    'form': form}
-        return render(request, 'synchronizer/project.html', context)
+        return render(request, 'synchronizer/add_recording.html', context)
