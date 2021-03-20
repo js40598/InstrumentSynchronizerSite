@@ -40,6 +40,7 @@ class Create(View):
     def post(self, request):
         creation_form = self.form(data={'user': request.user,
                                         'title': request.POST['title'],
+                                        'bpm': request.POST['bpm'],
                                         'description': request.POST['description'],
                                         })
         if creation_form.is_valid():
@@ -54,14 +55,14 @@ class Create(View):
 class Project(View):
     form = RecordingAddForm
 
-    def get(self, request, project_title):
-        project = ProjectModel.objects.get(title=project_title, user=request.user)
+    def get(self, request, project_slug):
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         context = {'project': project,
                    'form': self.form()}
         return render(request, 'synchronizer/project.html', context)
 
-    def post(self, request, project_title):
-        project = ProjectModel.objects.get(title=project_title, user=request.user)
+    def post(self, request, project_slug):
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         form = self.form(files=request.FILES, data={'instrument': request.POST['instrument'],
                                                     'identifier': request.POST['identifier'],
                                                     'pitch': request.POST['pitch'],
@@ -70,7 +71,7 @@ class Project(View):
         if form.is_valid():
             recording = Recording(**form.cleaned_data)
             recording.save()
-            return redirect('project', project_title)
+            return redirect('project', project_slug)
         context = {'project': project,
                    'form': form}
         return render(request, 'synchronizer/project.html', context)

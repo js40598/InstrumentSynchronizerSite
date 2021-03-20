@@ -21,5 +21,5 @@ urlpatterns = [
     path('howto/', views.howto, name='synchronizerhowto'),
     path('projects/', views.Projects.as_view(), name='projects'),
     path('create/', views.Create.as_view(), name='create_project'),
-    path('projects/<project_title>', views.Project.as_view(), name='project'),
+    path('projects/<project_slug>', views.Project.as_view(), name='project'),
 ]

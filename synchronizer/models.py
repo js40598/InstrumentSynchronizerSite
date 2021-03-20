@@ -11,6 +11,7 @@ from metronome.models import PositiveIntegerRangeField
 
 class Project(models.Model):
     title = models.CharField(max_length=100)
+    slug = models.SlugField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(max_length=200, blank=True)
     bpm = PositiveIntegerRangeField(min_value=10, max_value=300)
@@ -21,6 +22,7 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.creation_date = datetime.now()
+            self.slug = slugify(self.title)
         self.edition_date = datetime.now()
         return super(Project, self).save(*args, **kwargs)
 

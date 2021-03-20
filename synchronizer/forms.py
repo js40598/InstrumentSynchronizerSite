@@ -9,7 +9,7 @@ class ProjectCreationForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'user']
+        fields = ['title', 'description', 'user', 'bpm']
 
 
 class RecordingAddForm(forms.ModelForm):

@@ -5,6 +5,8 @@
         {% csrf_token %}
         {{ creation_form.title.label }}<br>
         {{ creation_form.title }}<br>
+        {{ creation_form.bpm.label }}<br>
+        {{ creation_form.bpm }}<br>
         {{ creation_form.description.label }}<br>
         {{ creation_form.description }}<br>
         {{ errors }}
