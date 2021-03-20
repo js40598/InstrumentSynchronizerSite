@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
+from metronome.models import PositiveIntegerRangeField
 
 # Create your models here.
 
@@ -9,6 +10,7 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(max_length=200, blank=True)
+    bpm = PositiveIntegerRangeField(min_value=10, max_value=300)
     creation_date = models.DateField(editable=False, blank=True)
     edition_date = models.DateTimeField(blank=True)
 
