@@ -24,16 +24,22 @@ class Projects(View):
         return render(request, 'synchronizer/projects.html', context)
 
     def post(self, request):
-        creation_form = ProjectCreationForm(data={'user': request.user,
-                                                  'title': request.POST['title'],
-                                                  'description': request.POST['description'],
-                                                  })
-        if creation_form.is_valid():
-            project = ProjectModel(**creation_form.cleaned_data)
-            project.save()
+        creation_form = ProjectCreationForm()
+        if 'creation_submit' in request.POST:
+            creation_form = ProjectCreationForm(data={'user': request.user,
+                                                      'title': request.POST['title'],
+                                                      'description': request.POST['description'],
+                                                      })
+            if creation_form.is_valid():
+                project = ProjectModel(**creation_form.cleaned_data)
+                project.save()
+        elif 'confirm_id' in request.POST:
+            project = ProjectModel.objects.get(id=request.POST['confirm_id'], user=request.user)
+            project.delete()
         context = {'creation_form': creation_form,
                    'errors': creation_form.errors,
-                   'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date')}
+                   'projects': ProjectModel.objects.filter(user=request.user).order_by('edition_date'),
+                   'delete_id': int(request.POST.get('delete_id', 0))}
         return render(request, 'synchronizer/projects.html', context)
 
 
