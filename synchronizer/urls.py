@@ -23,4 +23,7 @@ urlpatterns = [
     path('create/', views.CreateProject.as_view(), name='create_project'),
     path('projects/<project_slug>', views.Project.as_view(), name='project'),
     path('projects/<project_slug>/add_recording', views.AddRecording.as_view(), name='add_recording'),
+    path('projects/<project_slug>/edit_recording/<recording_slug>',
+         views.EditRecording.as_view(),
+         name='edit_recording'),
 ]

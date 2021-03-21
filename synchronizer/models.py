@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
+from InstrumentSynchronizerSite.utils import random_ascii_string
 
 from django.utils.text import slugify
 
@@ -34,7 +35,19 @@ class Recording(models.Model):
     project = models.ForeignKey(Project, related_name='recordings', on_delete=models.CASCADE)
     file = models.FileField(upload_to='recordings/')
     instrument = models.CharField(max_length=100, blank=True)
-    identifier = models.CharField(max_length=100, blank=True)
+    identifier = models.CharField(max_length=100)
+    slug = models.SlugField(blank=True)
     pitch = models.CharField(max_length=100, blank=True)
     author = models.CharField(max_length=100, blank=True)
     samples = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        slug = slugify(self.instrument + self.identifier)
+        slug_list = [recording.slug for recording in self.project.recordings.all()]
+        while slug in slug_list:
+            slug = slugify('{}-{}-{}'.format(self.instrument, self.identifier, random_ascii_string(5)))
+        self.slug = slug
+        return super(Recording, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = [['project', 'identifier']]

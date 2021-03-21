@@ -92,3 +92,11 @@ class AddRecording(View):
         context = {'project': project,
                    'form': form}
         return render(request, 'synchronizer/add_recording.html', context)
+
+
+class EditRecording(View):
+    def get(self, request, project_slug, recording_slug):
+        return render(request, 'synchronizer/edit_recording.html')
+
+    def post(self, request, project_slug, recording_slug):
+        return render(request, 'synchronizer/edit_recording.html')

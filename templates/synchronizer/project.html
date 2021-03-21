@@ -18,7 +18,11 @@
         </tr>
         {% for recording in project.recordings.all %}
             <tr>
-                <td>{{ recording.instrument }}</td>
+                <td>
+                    <a href="{% url 'edit_recording' project.slug recording.slug %}">
+                        {{ recording.instrument }}
+                    </a>
+                </td>
                 <td>{{ recording.identifier }}</td>
                 <td>{{ recording.pitch }}</td>
                 <td>{{ recording.author }}</td>
