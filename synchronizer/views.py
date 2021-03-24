@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.views import View
-from synchronizer.forms import ProjectCreationForm, RecordingAddForm
+
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.AudioFile import AudioFile
+from synchronizer.forms import ProjectCreationForm, RecordingAddForm, CutRecordingForm
 from synchronizer.models import Project as ProjectModel
 from synchronizer.models import Recording
 import os
@@ -97,7 +99,10 @@ class AddRecording(View):
 
 
 class CutRecording(View):
+    form = CutRecordingForm
+
     def get(self, request, project_slug, recording_slug):
+        form = self.form(max_value=44100*20)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
         recording_url = os.path.join(settings.BASE_DIR,
@@ -107,10 +112,14 @@ class CutRecording(View):
                                      str(recording.file.name).split('/')[-1][:-3] + 'm4a')
         context = {'project': project,
                    'recording': recording,
-                   'recording_url': recording_url}
+                   'recording_url': recording_url,
+                   'form': form}
         return render(request, 'synchronizer/cut_recording.html', context)
 
     def post(self, request, project_slug, recording_slug):
+        form = self.form(max_value=44100*20, value=request.POST['cut_index'], data=request.POST)
+        if form.is_valid():
+            file = AudioFile(Recording.objects.get(slug=recording_slug).file.path)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
         recording_url = os.path.join(settings.BASE_DIR,
@@ -120,5 +129,6 @@ class CutRecording(View):
                                      str(recording.file.name).split('/')[-1][:-3] + 'm4a')
         context = {'project': project,
                    'recording': recording,
-                   'recording_url': recording_url}
+                   'recording_url': recording_url,
+                   'form': form}
         return render(request, 'synchronizer/cut_recording.html', context)
