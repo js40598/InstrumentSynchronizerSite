@@ -53,7 +53,7 @@ class Generate(View):
         metronome_name = 'Metronome{}Hz{}sec{}bpm{}{}.wav'.format(request.POST['frequency'],
                                                                   request.POST['duration'],
                                                                   request.POST['bpm'],
-                                                                  'Stereo' if request.POST['stereo'] else '',
+                                                                  'Stereo' if request.POST.get('stereo') else '',
                                                                   Tick.objects.get(id=request.POST['tick']).title)
         metronome_url = os.path.join(settings.BASE_DIR,
                                      'InstrumentSynchronizerSite',
