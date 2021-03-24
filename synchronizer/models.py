@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
 from InstrumentSynchronizerSite.utils import random_ascii_string
+import os
+from InstrumentSynchronizerSite.settings import RECORDINGS_URL
 
 from django.utils.text import slugify
 
@@ -33,7 +35,7 @@ class Project(models.Model):
 
 class Recording(models.Model):
     project = models.ForeignKey(Project, related_name='recordings', on_delete=models.CASCADE)
-    file = models.FileField(upload_to='InstrumentSynchronizerSite/static/recordings')
+    file = models.FileField(upload_to=RECORDINGS_URL)
     instrument = models.CharField(max_length=100, blank=True)
     identifier = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)

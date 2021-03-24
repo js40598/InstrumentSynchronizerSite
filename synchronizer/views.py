@@ -91,6 +91,11 @@ class AddRecording(View):
                                                     'project': project})
         if form.is_valid():
             recording = Recording(**form.cleaned_data)
+            recording_path = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name))
+            audio_file = AudioFile(recording_path)
+            if recording_path != audio_file.directory:
+                os.remove(recording_path)
+            recording.file = audio_file.directory
             recording.save()
             return redirect('cut_recording', project_slug, recording.slug)
         context = {'project': project,
@@ -105,11 +110,7 @@ class CutRecording(View):
         form = self.form(max_value=44100*20)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
-        recording_url = os.path.join(settings.BASE_DIR,
-                                     'InstrumentSynchronizerSite',
-                                     'static',
-                                     'recordings',
-                                     str(recording.file.name).split('/')[-1][:-3] + 'm4a')
+        recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
         context = {'project': project,
                    'recording': recording,
                    'recording_url': recording_url,
@@ -117,18 +118,18 @@ class CutRecording(View):
         return render(request, 'synchronizer/cut_recording.html', context)
 
     def post(self, request, project_slug, recording_slug):
-        form = self.form(max_value=44100*20, value=request.POST['cut_index'], data=request.POST)
-        if form.is_valid():
-            file = AudioFile(Recording.objects.get(slug=recording_slug).file.path)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
-        recording_url = os.path.join(settings.BASE_DIR,
-                                     'InstrumentSynchronizerSite',
-                                     'static',
-                                     'recordings',
-                                     str(recording.file.name).split('/')[-1][:-3] + 'm4a')
-        context = {'project': project,
-                   'recording': recording,
-                   'recording_url': recording_url,
-                   'form': form}
-        return render(request, 'synchronizer/cut_recording.html', context)
+        form = self.form(max_value=44100*20, value=request.POST['cut_index'], data=request.POST)
+        if form.is_valid():
+            file = AudioFile(str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name)))
+            file.cut_samples(int(request.POST['cut_index']))
+            file.save_file()
+            return redirect('project', project_slug)
+        else:
+            recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
+            context = {'project': project,
+                       'recording': recording,
+                       'recording_url': recording_url,
+                       'form': form}
+            return render(request, 'synchronizer/cut_recording.html', context)

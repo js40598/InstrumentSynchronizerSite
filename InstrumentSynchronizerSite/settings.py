@@ -128,3 +128,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'InstrumentSynchronizerSite/static'
 ]
+
+RECORDINGS_ROOT = BASE_DIR / 'InstrumentSynchronizerSite' / 'static' / 'recordings'
+RECORDINGS_URL = 'static/recordings'
