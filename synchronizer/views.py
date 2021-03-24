@@ -5,6 +5,8 @@ from django.views import View
 from synchronizer.forms import ProjectCreationForm, RecordingAddForm
 from synchronizer.models import Project as ProjectModel
 from synchronizer.models import Recording
+import os
+from InstrumentSynchronizerSite import settings
 
 
 def about(request):
@@ -88,15 +90,35 @@ class AddRecording(View):
         if form.is_valid():
             recording = Recording(**form.cleaned_data)
             recording.save()
-            return redirect('project', project_slug)
+            return redirect('cut_recording', project_slug, recording.slug)
         context = {'project': project,
                    'form': form}
         return render(request, 'synchronizer/add_recording.html', context)
 
 
-class EditRecording(View):
+class CutRecording(View):
     def get(self, request, project_slug, recording_slug):
-        return render(request, 'synchronizer/edit_recording.html')
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+        recording = Recording.objects.get(project=project, slug=recording_slug)
+        recording_url = os.path.join(settings.BASE_DIR,
+                                     'InstrumentSynchronizerSite',
+                                     'static',
+                                     'recordings',
+                                     str(recording.file.name).split('/')[-1][:-3] + 'm4a')
+        context = {'project': project,
+                   'recording': recording,
+                   'recording_url': recording_url}
+        return render(request, 'synchronizer/cut_recording.html', context)
 
     def post(self, request, project_slug, recording_slug):
-        return render(request, 'synchronizer/edit_recording.html')
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+        recording = Recording.objects.get(project=project, slug=recording_slug)
+        recording_url = os.path.join(settings.BASE_DIR,
+                                     'InstrumentSynchronizerSite',
+                                     'static',
+                                     'recordings',
+                                     str(recording.file.name).split('/')[-1][:-3] + 'm4a')
+        context = {'project': project,
+                   'recording': recording,
+                   'recording_url': recording_url}
+        return render(request, 'synchronizer/cut_recording.html', context)

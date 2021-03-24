@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <input name="cut_index" type="range" min="1" max="100" value="50" class="slider"><br>
+        <button type="submit">Cut</button>
+    </form>
+    <br>
+     <audio controls>
+         <source src="{% static recording_url %}" type="audio/wav">
+     </audio>
+{% endblock %}
