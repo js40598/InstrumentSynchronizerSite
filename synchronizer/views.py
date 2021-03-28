@@ -138,6 +138,7 @@ class CutRecording(View):
             file.samplesright = synchronized_file.synchronized_samplesright
             file.save_file()
             recording.file = file.directory
+            recording.first_beat_index = synchronized_file.synchronized_indexes[0]
             recording.save()
             return redirect('project', project_slug)
         else:

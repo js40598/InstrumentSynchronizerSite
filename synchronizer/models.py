@@ -36,6 +36,7 @@ class Project(models.Model):
 class Recording(models.Model):
     project = models.ForeignKey(Project, related_name='recordings', on_delete=models.CASCADE)
     file = models.FileField(upload_to='InstrumentSynchronizerSite/static/recordings')
+    first_beat_index = models.IntegerField(blank=True)
     instrument = models.CharField(max_length=100, blank=True)
     identifier = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)
