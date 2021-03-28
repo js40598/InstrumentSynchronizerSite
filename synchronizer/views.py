@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.AudioFile import AudioFile
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.Synchronizer import Synchronizer
 from synchronizer.forms import ProjectCreationForm, RecordingAddForm, CutRecordingForm
 from synchronizer.models import Project as ProjectModel
 from synchronizer.models import Recording
@@ -91,16 +92,20 @@ class AddRecording(View):
                                                     'project': project})
         if form.is_valid():
             recording = Recording(**form.cleaned_data)
-            recording_path = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name))
+            recording.save()
+            recording_path = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1]))
+
             audio_file = AudioFile(recording_path)
-            if recording_path != audio_file.directory:
-                os.remove(recording_path)
+            # if recording_path != audio_file.directory:
+            #     os.remove(recording_path)
             recording.file = audio_file.directory
             recording.save()
             return redirect('cut_recording', project_slug, recording.slug)
-        context = {'project': project,
-                   'form': form}
-        return render(request, 'synchronizer/add_recording.html', context)
+        else:
+            context = {'project': project,
+                       'form': form,
+                       'errors': form.errors}
+            return render(request, 'synchronizer/add_recording.html', context)
 
 
 class CutRecording(View):
@@ -110,7 +115,7 @@ class CutRecording(View):
         form = self.form(max_value=44100*20)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
-        recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
+        recording_url = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1]))
         context = {'project': project,
                    'recording': recording,
                    'recording_url': recording_url,
@@ -122,14 +127,33 @@ class CutRecording(View):
         recording = Recording.objects.get(project=project, slug=recording_slug)
         form = self.form(max_value=44100*20, value=request.POST['cut_index'], data=request.POST)
         if form.is_valid():
-            file = AudioFile(str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name)))
+            file = AudioFile(str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1])))
             file.cut_samples(int(request.POST['cut_index']))
             file.save_file()
+            synchronized_file = Synchronizer(file.framerate,
+                                             project.bpm,
+                                             list(file.samplesleft),
+                                             list(file.samplesright))
+            file.samplesleft = synchronized_file.synchronized_samplesleft
+            file.samplesright = synchronized_file.synchronized_samplesright
+            file.save_file()
+            recording.file = file.directory
+            recording.save()
             return redirect('project', project_slug)
         else:
-            recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
+            recording_url = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1]))
             context = {'project': project,
                        'recording': recording,
                        'recording_url': recording_url,
                        'form': form}
             return render(request, 'synchronizer/cut_recording.html', context)
+
+
+def view_recording(request, project_slug, recording_slug):
+    project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+    recording = Recording.objects.get(project=project, slug=recording_slug)
+    recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
+    context = {'project': project,
+               'recording': recording,
+               'recording_url': recording_url}
+    return render(request, 'synchronizer/view_recording.html', context)

@@ -9,6 +9,7 @@
     <a href="{% url 'project' project.slug %}">Back</a>
     <br>
     <br>
+    {{ errors }}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.file.label }}<br>

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <a href="{% url 'project' project.slug %}">Back</a><br>
+     <audio controls>
+         <source src="{% static recording_url %}" type="audio/wav">
+     </audio>
+{% endblock %}
