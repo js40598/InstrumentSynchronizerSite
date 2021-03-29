@@ -1,9 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
+
+from InstrumentSynchronizerSite.InstrumentSynchronizer.instrsyn.AudioFile import AudioFile
 from InstrumentSynchronizerSite.utils import random_ascii_string
 import os
 from InstrumentSynchronizerSite.settings import RECORDINGS_URL
+from InstrumentSynchronizerSite import settings
+import numpy as np
 
 from django.utils.text import slugify
 
@@ -43,8 +47,34 @@ class Recording(models.Model):
     pitch = models.CharField(max_length=100, blank=True)
     author = models.CharField(max_length=100, blank=True)
     samples = models.TextField(blank=True)
+    cut = models.BooleanField(default=False)
+    synchronized = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        if self.cut and not self.synchronized:
+            recordings = Recording.objects.filter(project=self.project)
+            if len(recordings) > 0:
+                index_difference = recordings[0].first_beat_index - self.first_beat_index
+                if index_difference > 0:
+                    file_directory = os.path.join(settings.RECORDINGS_ROOT, self.file.name)
+                    audio_file = AudioFile(file_directory)
+                    samplesleft = list(audio_file.samplesleft)
+                    samplesright = list(audio_file.samplesright)
+                    audio_file.samplesleft = np.array(samplesleft[0] * index_difference + samplesleft)
+                    audio_file.samplesright = np.array(samplesright[0] * index_difference + samplesright)
+                    audio_file.save_file()
+                    self.first_beat_index = recordings[0].first_beat_index
+                elif index_difference < 0:
+                    for recording in recordings:
+                        file_directory = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
+                        audio_file = AudioFile(file_directory)
+                        audio_file.samplesleft = np.array([0] * abs(index_difference) + list(audio_file.samplesleft))
+                        audio_file.samplesright = np.array([0] * abs(index_difference) + list(audio_file.samplesright))
+                        audio_file.save_file()
+                        recording.first_beat_index = self.first_beat_index
+                        recording.save()
+                self.synchronized = True
+
         slug = slugify(self.instrument + self.identifier)
         slug_list = [recording.slug for recording in self.project.recordings.all()]
         while slug in slug_list:

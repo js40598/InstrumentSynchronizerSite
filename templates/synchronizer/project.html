@@ -43,4 +43,9 @@
             </tr>
         {% endfor %}
     </table>
+
+    <form method="POST" action="{% url 'download_synchronized_project' project.slug request.user %}">
+        {% csrf_token %}
+        <button type="submit">Synchronize</button>
+    </form>
 {% endblock %}

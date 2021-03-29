@@ -25,4 +25,5 @@ urlpatterns = [
     path('projects/<project_slug>/add_recording', views.AddRecording.as_view(), name='add_recording'),
     path('projects/<project_slug>/cut_recording/<recording_slug>', views.CutRecording.as_view(), name='cut_recording'),
     path('projects/<project_slug>/<recording_slug>', views.view_recording, name='view_recording'),
+    path('projects/<project_slug>/<username>/download', views.download_synchronized_project, name='download_synchronized_project'),
 ]

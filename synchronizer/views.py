@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -10,6 +11,9 @@ from synchronizer.models import Project as ProjectModel
 from synchronizer.models import Recording
 import os
 from InstrumentSynchronizerSite import settings
+from pydub import AudioSegment
+from pydub.playback import play
+import wave
 
 
 def about(request):
@@ -92,6 +96,7 @@ class AddRecording(View):
                                                     'project': project})
         if form.is_valid():
             recording = Recording(**form.cleaned_data)
+            recording.first_beat_index = 0
             recording.save()
             recording_path = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1]))
 
@@ -112,7 +117,7 @@ class CutRecording(View):
     form = CutRecordingForm
 
     def get(self, request, project_slug, recording_slug):
-        form = self.form(max_value=44100*20)
+        form = self.form(max_value=44100 * 20)
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
         recording_url = str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1]))
@@ -125,7 +130,7 @@ class CutRecording(View):
     def post(self, request, project_slug, recording_slug):
         project = ProjectModel.objects.get(slug=project_slug, user=request.user)
         recording = Recording.objects.get(project=project, slug=recording_slug)
-        form = self.form(max_value=44100*20, value=request.POST['cut_index'], data=request.POST)
+        form = self.form(max_value=44100 * 20, value=request.POST['cut_index'], data=request.POST)
         if form.is_valid():
             file = AudioFile(str(os.path.join(settings.RECORDINGS_ROOT, recording.file.name.split('/')[-1])))
             file.cut_samples(int(request.POST['cut_index']))
@@ -139,6 +144,7 @@ class CutRecording(View):
             file.save_file()
             recording.file = file.directory
             recording.first_beat_index = synchronized_file.synchronized_indexes[0]
+            recording.cut = True
             recording.save()
             return redirect('project', project_slug)
         else:
@@ -151,6 +157,8 @@ class CutRecording(View):
 
 
 def view_recording(request, project_slug, recording_slug):
+    print(project_slug)
+    print(recording_slug)
     project = ProjectModel.objects.get(slug=project_slug, user=request.user)
     recording = Recording.objects.get(project=project, slug=recording_slug)
     recording_url = os.path.join(settings.RECORDINGS_ROOT, recording.file.name)
@@ -158,3 +166,32 @@ def view_recording(request, project_slug, recording_slug):
                'recording': recording,
                'recording_url': recording_url}
     return render(request, 'synchronizer/view_recording.html', context)
+
+
+def download_synchronized_project(request, project_slug, username):
+    if request.method == 'POST':
+        project = ProjectModel.objects.get(slug=project_slug, user=request.user)
+        recordings = Recording.objects.filter(project=project)
+        file_name = str(project_slug) + str(request.user) + '.wav'
+        data = []
+        output_file = os.path.join(settings.RECORDINGS_ROOT, file_name)
+        output_wavfile = AudioSegment.from_file(os.path.join(settings.RECORDINGS_ROOT, recordings[0].file.name))
+        for i in range(1, len(recordings)):
+            file_directory = os.path.join(settings.RECORDINGS_ROOT, recordings[i].file.name)
+            # output_wavfile += AudioSegment.from_file(os.path.join(settings.RECORDINGS_ROOT, recordings[i].file.name))
+            to_overlay = AudioSegment.from_file(os.path.join(settings.RECORDINGS_ROOT, recordings[i].file.name))
+            output_wavfile = output_wavfile.overlay(to_overlay)
+            # wavfile = wave.open(file_directory)
+            # data.append([wavfile.getparams(), wavfile.readframes(wavfile.getnframes())])
+            # wavfile.close()
+        output_wavfile.export(out_f=output_file, format='wav')
+        # output = wave.open(output_file, 'wb')
+        # output.setparams(data[0][0])
+        # for i in range(len(data)):
+        #     output.writeframes(data[i][1])
+        # output.close()
+        #
+        with open(output_file, 'rb') as file:
+            response = HttpResponse(file.read(), content_type="application/wav")
+            response['Content-Disposition'] = 'inline; filename=' + file_name
+            return response
