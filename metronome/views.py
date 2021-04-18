@@ -87,6 +87,11 @@ class Generate(View):
         metronome_name = metronome_name[:-3]+'mp3'
         context['generated_metronome_name'] = metronome_name
         context['generated_metronome_url'] = metronome_url
+        context['audio'] = {
+            'max_value': int(request.POST['duration']) * int(request.POST['frequency']),
+            'frequency': int(request.POST['frequency']),
+            'duration': int(request.POST['duration'])
+        }
 
         if 'save_submit' in request.POST:
             validate_form = MetronomeSaveForm(data={'title': request.POST['title'],

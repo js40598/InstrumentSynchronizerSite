@@ -1,43 +1,63 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <a href="{% url 'create_project' %}">Create new project!</a>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Instruments</th>
-            <th>Edited</th>
-            <th>Created</th>
-            <th>Delete</th>
-        </tr>
-        {% for project in projects %}
-            <tr>
-                <td><a href="{% url 'project' project.slug %}">{{ project.title }}</a></td>
-                <td>{{ project.description }}</td>
-                <td>
-                    {% for recording in project.recordings.all %}
-                        {{ recording.instrument }}
+    <div class="col s12">
+        <div class="input-field col s3 no-margin-bottom">
+            <h5 class="h36px">
+                Your projects
+            </h5>
+        </div>
+        <div class="input-field col s1 no-margin-bottom offset-s8">
+            <h5>
+                <a href="{% url 'create_project' %}">
+                    <button class="btn waves-effect waves-light right-8px">
+                        <i class="material-icons">library_add</i>
+                    </button>
+                </a>
+            </h5>
+        </div>
+        <div class="col s12">
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Instruments</th>
+                        <th>Edited</th>
+                        <th>Created</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                        <tr>
+                            <td><a href="{% url 'project' project.slug %}">{{ project.title }}</a></td>
+                            <td>{{ project.description }}</td>
+                            <td>
+                                {% for recording in project.recordings.all %}
+                                    {{ recording.instrument }}
+                                {% endfor %}
+                            </td>
+                            <td>{{ project.creation_date }}</td>
+                            <td>{{ project.edition_date }}</td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    {% if project.id is delete_id %}
+                                        <button class="btn waves-effect waves-light bg-red" type="submit" name="confirm_id" value="{{ project.id }}">
+                                            <i class="material-icons">delete_forever</i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn waves-effect waves-light" type="submit" name="delete_id" value="{{ project.id }}">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
                     {% endfor %}
-                </td>
-                <td>{{ project.creation_date }}</td>
-                <td>{{ project.edition_date }}</td>
-                <td>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% if project.id is delete_id %}
-                            <button name="confirm_id" type="submit" value="{{ project.id }}">
-                                ✗
-                            </button>
-                        {% else %}
-                            <button name="delete_id" type="submit" value="{{ project.id }}">
-                                ✗
-                            </button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

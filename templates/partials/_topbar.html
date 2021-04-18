@@ -1,10 +1,18 @@
-<a href="{% url 'landing' %}">landing</a>
-<a href="{% url 'synchronizerabout' %}">synchronizer</a>
-<a href="{% url 'metronomeabout' %}">metronome</a>
-{% if user.is_authenticated %}
-    <a href="{% url 'logoutuser' %}">logout</a>
-{% else %}
-    <a href="{% url 'login' %}">login</a>
-    <a href="{% url 'register' %}">register</a>
-{% endif %}
+<nav class="row">
+<div class="nav-wrapper col s8 offset-s2">
+  <div class="col s1">
+    <a href="{% url 'landing' %}" class="brand-logo">Instrument Synchronizer</a>
+  </div>
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{% url 'synchronizerabout' %}"{% if 'synchronizer' in request.path %} class="active"{% endif %}>SYNCHRONIZER</a></li>
+    <li><a href="{% url 'metronomeabout' %}"{% if 'metronome' in request.path %} class="active"{% endif %}>METRONOME</a></li>
+    {% if user.is_authenticated %}
+      <li><a href="{% url 'logoutuser' %}">LOGOUT</a></li>
+    {% else %}
+      <li><a href="{% url 'login' %}"{% if 'login' in request.path %} class="active"{% endif %}>LOGIN</a></li>
+      <li><a href="{% url 'register' %}"{% if 'register' in request.path %} class="active"{% endif %}>REGISTER</a></li>
+    {% endif %}
+  </ul>
+</div>
+</nav>
 <br>

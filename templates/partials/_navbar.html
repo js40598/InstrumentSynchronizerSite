@@ -1,19 +1,22 @@
-{% if 'synchronizer' in request.path %}
-    <a href="{% url 'synchronizerabout' %}">about</a>
-    <a href="{% url 'synchronizerhowto' %}">howto</a>
-    {% if user.is_authenticated %}
-        <a href="{% url 'projects' %}">my projects</a>
+<div class="collection">
+    {% if 'synchronizer' in request.path %}
+        {% if 'synchronizer' in request.path %}
+            <a href="{% url 'synchronizerabout' %}" class="collection-item{% if 'about' in request.path %} active{% endif %}">About</a>
+            <a href="{% url 'synchronizerhowto' %}" class="collection-item{% if 'howto' in request.path %} active{% endif %}">How To</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'projects' %}" class="collection-item{% if 'projects' in request.path %} active{% endif %}">My Projects</a>
+            {% endif %}
+        {% endif %}
+    {% elif 'metronome' in request.path %}
+        <a href="{% url 'metronomeabout' %}" class="collection-item{% if 'about' in request.path %} active{% endif %}">About</a>
+        <a href="{% url 'metronomehowto' %}" class="collection-item{% if 'howto' in request.path %} active{% endif %}">How To</a>
+        <a href="{% url 'generate' %}" class="collection-item{% if 'generate' in request.path %} active{% endif %}">Generate</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'metronomes' %}" class="collection-item{% if 'metronomes' in request.path %} active{% endif %}">My Metronomes</a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'about' %}" class="collection-item{% if 'about' in request.path %} active{% endif %}">About</a>
+        <a href="{% url 'contact' %}" class="collection-item{% if 'contact' in request.path %} active{% endif %}">Contact</a>
     {% endif %}
-{% elif 'metronome' in request.path %}
-    <a href="{% url 'metronomeabout' %}">about</a>
-    <a href="{% url 'metronomehowto' %}">howto</a>
-    <a href="{% url 'generate' %}">generate</a>
-    {% if user.is_authenticated %}
-        <a href="{% url 'metronomes' %}">my metronomes</a>
-    {% endif %}
-{% elif 'accounts' in request.path %}
-{% else %}
-    <a href="{% url 'about' %}">about</a>
-    <a href="{% url 'contact' %}">contact</a>
-{% endif %}
+</div>
 <br>

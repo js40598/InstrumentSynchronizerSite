@@ -1,51 +1,77 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <br>
-    {{ project.title }}<br>
-    {{ project.description }}<br>
-    {{ project.bpm }}<br>
-    <br>
-    <a href="{% url 'add_recording' project.slug %}">Add recording</a>
-    <br><br>
-    <table>
-        <tr>
-            <th>Instrument</th>
-            <th>Identifier</th>
-            <th>Pitch</th>
-            <th>Author</th>
-            <th>Delete</th>
-        </tr>
-        {% for recording in project.recordings.all %}
-            <tr>
-                <td>
-                    <a href="{% url 'view_recording' project.slug recording.slug %}">
-                        {{ recording.instrument }}
-                    </a>
-                </td>
-                <td>{{ recording.identifier }}</td>
-                <td>{{ recording.pitch }}</td>
-                <td>{{ recording.author }}</td>
-                <td>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% if recording.id is delete_id %}
-                            <button name="confirm_id" type="submit" value="{{ recording.id }}">
-                                ✗
-                            </button>
-                        {% else %}
-                            <button name="delete_id" type="submit" value="{{ recording.id }}">
-                                ✗
-                            </button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="col s12">
+        <div class="input-field col s3 no-margin-bottom">
+            <h5 class="h36px">
+                {{ project.title }}
+            </h5>
+            <h6 class="h36px">
+                Tempo {{ project.bpm }}
+            </h6>
+            <h7 class="h36px">
+                {{ project.description }}
+            </h7>
+        </div>
+        <div class="input-field col s1 no-margin-bottom offset-s8">
+            <h5>
+                <a href="{% url 'add_recording' project.slug %}">
+                    <button class="btn waves-effect waves-light right right-8px">
+                        <i class="material-icons">library_add</i>
+                    </button>
+                </a>
+            </h5>
+        </div>
+        <div class="col s12">
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Instrument</th>
+                        <th>Identifier</th>
+                        <th>Pitch</th>
+                        <th>Author</th>
+                        <th class="right padding-right-8px">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recording in project.recordings.all %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'view_recording' project.slug recording.slug %}">
+                                    {{ recording.instrument }}
+                                </a>
+                            </td>
+                            <td>{{ recording.identifier }}</td>
+                            <td>{{ recording.pitch }}</td>
+                            <td>{{ recording.author }}</td>
+                            <td class="right padding-right-8px">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    {% if recording.id is delete_id %}
+                                        <button class="btn waves-effect waves-light bg-red" type="submit" name="confirm_id" value="{{ recording.id }}">
+                                            <i class="material-icons">delete_forever</i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn waves-effect waves-light" type="submit" name="delete_id" value="{{ recording.id }}">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-    <form method="POST" action="{% url 'download_synchronized_project' project.slug request.user %}">
-        {% csrf_token %}
-        <button type="submit">Synchronize</button>
-    </form>
+        </div>
+            <form method="POST" action="{% url 'download_synchronized_project' project.slug request.user %}">
+                {% csrf_token %}
+                <div class="input-field col s12">
+                    <button type="submit" class="btn waves-effect waves-light right right-8px">Done
+                        <i class="material-icons right">library_add</i>
+                    </button>
+                </div>
+            </form>
+    </div>
+
 {% endblock %}

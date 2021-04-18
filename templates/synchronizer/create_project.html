@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ creation_form.title.label }}<br>
-        {{ creation_form.title }}<br>
-        {{ creation_form.bpm.label }}<br>
-        {{ creation_form.bpm }}<br>
-        {{ creation_form.description.label }}<br>
-        {{ creation_form.description }}<br>
-        {{ errors }}
-        <button type="submit" name="creation_submit">Create</button>
+    <form method="POST" class="row">
+        <div class="col s1"></div>
+        <div class="col s6">
+            <div class="input-field col s12 no-margin-bottom">
+                <h5>Create project</h5>
+            </div>
+            {% csrf_token %}
+            <div class="input-field col s12">
+                {% render_field creation_form.title autocomplete="off" %}
+                <label for="id_title">Title</label>
+            </div>
+            <div class="input-field col s12">
+                {% render_field creation_form.bpm autocomplete="off" %}
+                <label for="id_bpm">BPM</label>
+            </div>
+            <div class="input-field col s12">
+                {% render_field creation_form.description autocomplete="off" class="materialize-textarea" %}
+                <label for="id_description">Description</label>
+            </div>
+            {{ errors }}
+            <div class="input-field col s12">
+                <button class="btn waves-effect waves-light" type="submit" name="creation_submit">Create
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
+        </div>
     </form>
 {% endblock %}

@@ -1,52 +1,60 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div class="col s12">
 
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Duration</th>
-            <th>BPM</th>
-            <th>Tick</th>
-            <th>Frequency</th>
-            <th>Delete</th>
-            <th>View</th>
-        </tr>
-        {% for metronome in metronomes %}
-            <tr>
-                <td>{{ metronome.metronome.title }}</td>
-                <td>{{ metronome.metronome.duration }}s</td>
-                <td>{{ metronome.metronome.bpm }}</td>
-                <td>{{ metronome.metronome.tick }}</td>
-                <td>{{ metronome.metronome.frequency }}Hz</td>
-                <td>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% if metronome.metronome.id is delete_id %}
-                            <button name="confirm_id" type="submit" value="{{ metronome.metronome.id }}">
-                                ✗
-                            </button>
-                        {% else %}
-                            <button name="delete_id" type="submit" value="{{ metronome.metronome.id }}">
-                                ✗
-                            </button>
-                        {% endif %}
-                    </form>
-                </td>
-                <td>
-                    <form method="POST" action="{% url 'generate' %}">
-                        {% csrf_token %}
-                        {{ metronome.form.frequency }}
-                        {{ metronome.form.duration }}
-                        {{ metronome.form.bpm }}
-                        {{ metronome.form.stereo }}
-                        {{ metronome.form.tick }}
-                        <button name="creation_submit" type="submit" value="view">
-                            ✗
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+
+        <div class="input-field col s12 no-margin-bottom">
+            <h5>Your metronomes</h5>
+        </div>
+        <div class="col s12">
+            <table class="responsive-table">
+                <tr>
+                    <th>Title</th>
+                    <th>Duration</th>
+                    <th>BPM</th>
+                    <th>Tick</th>
+                    <th>Frequency</th>
+                    <th>Delete</th>
+                    <th>View</th>
+                </tr>
+                {% for metronome in metronomes %}
+                    <tr>
+                        <td>{{ metronome.metronome.title }}</td>
+                        <td>{{ metronome.metronome.duration }}s</td>
+                        <td>{{ metronome.metronome.bpm }}</td>
+                        <td>{{ metronome.metronome.tick }}</td>
+                        <td>{{ metronome.metronome.frequency }}Hz</td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                {% if metronome.metronome.id is delete_id %}
+                                    <button class="btn waves-effect waves-light bg-red" type="submit" name="confirm_id" value="{{ metronome.metronome.id }}">
+                                        <i class="material-icons">delete_forever</i>
+                                    </button>
+                                {% else %}
+                                    <button class="btn waves-effect waves-light" type="submit" name="delete_id" value="{{ metronome.metronome.id }}">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'generate' %}">
+                                {% csrf_token %}
+                                {{ metronome.form.frequency }}
+                                {{ metronome.form.duration }}
+                                {{ metronome.form.bpm }}
+                                {{ metronome.form.stereo }}
+                                {{ metronome.form.tick }}
+                                <button class="btn waves-effect waves-light" type="submit" name="creation_submit" value="view">
+                                    <i class="material-icons">pageview</i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

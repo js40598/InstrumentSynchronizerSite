@@ -1,14 +1,110 @@
 {% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
 {% load static %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.cut_index }}<br>
-        <button type="submit">Cut</button>
-    </form>
-    <br>
-     <audio controls>
-         <source src="{% static recording_url %}" type="audio/wav">
-     </audio>
+    <div class="col s12">
+        <div class="col s12">
+            <form method="POST">
+                <div class="input-field col s12">
+                    <h5>Cut recording</h5>
+                </div>
+                <div class="input-field col s12">
+                    <a href="#" id="play">
+                        <button class="btn waves-effect waves-light" type="button">
+                            <i class="material-icons" id="playIcon">play_arrow</i>
+                        </button>
+                    </a>
+                </div>
+                {% csrf_token %}
+                <div class="input-field col s12 no-margin">
+                    {% render_field form.cut_index class="no-margin pointer" %}
+                    <label for="audioRange" class=" no-margin"></label>
+                    <input type="range" id="audioRange" min="0" max="882000" value="0" class="no-margin pointer">
+                </div>
+                <div class="input-field col s2 row no-margin">
+                    <div class="input-field col s3 no-padding">
+                        <i class="material-icons left no-margin">volume_up</i>
+                    </div>
+                    <div class="input-field col s9 margin-top-2px no-padding">
+                        <label for="audioVolume"></label><input type="range" id="audioVolume" value="100">
+                    </div>
+                </div>
+                <div class="input-field col s12 no-margin">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">Cut
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+                <div class="input-field col s12">
+                     <audio id="id_audio">
+                         <source src="{% static recording_url %}" type="audio/wav">
+                     </audio>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    let audio = document.getElementById('id_audio');
+    let range = document.getElementById('id_cut_index');
+    let audioRange = document.getElementById('audioRange')
+    let audioVolume = document.getElementById('audioVolume')
+    let play = document.getElementById('play');
+    let playIcon = document.getElementById('playIcon');
+
+    audio.onpause = function () {
+        playIcon.innerText = "play_arrow";
+    }
+
+    audio.onplay = function () {
+        playIcon.innerText = "pause";
+    }
+
+    play.onclick = function () {
+        if (playIcon.innerText === "pause") {
+            audio["pause"]();
+        }
+        else {
+            audio["play"]();
+        }
+    }
+
+    range.oninput = function () {
+        audio["pause"]();
+        audioRange.value = range.value / 20 * 20;
+    }
+
+    range.onclick = function () {
+        audio["pause"]();
+        audioRange.value = range.value / 20 * 20;
+        audio.currentTime= range.value / 882000 * 20;
+        audio["play"]();
+    }
+
+    range.onchange = function () {
+        audio.currentTime= range.value / 882000 * 20;
+        audioRange.value = range.value / 20 * 20;
+        audio["play"]();
+    }
+
+    audioRange.onchange = function () {
+        audio["play"]();
+    }
+
+    audioRange.oninput = function () {
+        audio["pause"]();
+        audio.currentTime= audioRange.value / 882000 * 20;
+    }
+
+    audio.ontimeupdate = function () {
+        audioRange.value = audio.currentTime * 44100;
+    }
+
+    audioVolume.onclick = function () {
+        audio.volume = audioVolume.value / 100;
+    }
+
+    </script>
 {% endblock %}
