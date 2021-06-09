@@ -1,12 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db import OperationalError
 
 from .models import Metronome, Tick
 
 
 class MetronomeCreationForm(forms.ModelForm):
-    TICK_CHOICES = [(tick.id, tick) for tick in Tick.objects.all()]
+    try:
+        TICK_CHOICES = [(tick.id, tick) for tick in Tick.objects.all()]
+    except OperationalError:
+        TICK_CHOICES = [('1', 'tick')]
 
     class Meta:
         model = Metronome

@@ -58,6 +58,11 @@ button{
     top: 71px;
 }
 
+.top21px{
+    position: relative;
+    top: 21px;
+}
+
 .no-margin{
     margin: 0 !important;
 }
@@ -118,4 +123,25 @@ input[type="range"]::-moz-range-thumb{
 
 .top-minus3px{
     top: -3px;
+}
+
+.top-minus16px{
+    top: -20px;
+}
+
+[type="checkbox"]:checked + span:not(.lever)::before{
+    border-right: 2px solid #00B4D8;
+    border-bottom: 2px solid #00B4D8;
+}
+
+[type="radio"]:checked + span::after, [type="radio"].with-gap:checked{
+    background-color: #00B4D8;
+    border: 2px solid #00B4D8;
+}
+
+.text-decoration-none{
+    color: rgba(0, 0, 0, 0.87);
+}
+input[type="range"] {
+    height: 20px !important;
 }

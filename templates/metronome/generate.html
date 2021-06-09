@@ -53,24 +53,26 @@
             <h5>Download metronome</h5>
         </div>
         <div class="input-field col s12 row no-margin">
-            <div class="input-field col s2 no-padding no-margin-bottom">
-                <a href="#" id="play">
-                    <button class="btn waves-effect waves-light" type="button">
-                        <i class="material-icons" id="playIcon">play_arrow</i>
-                    </button>
-                </a>
+            <div class="input-field col s12 row no-margin">
+                <div class="input-field col s2 no-padding no-margin-bottom">
+                    <a href="#" id="play" class="text-decoration-none">
+                        <i class="material-icons left no-margin" id="playIcon">play_arrow</i>
+                    </a>
+                </div>
+                <div class="input-field col s9 l10 right no-padding no-margin-bottom margin-top-2px">
+                    <input type="range" id="audioRange" min="0" max="{{ audio.max_value }}" value="0" class="margin-top-2px">
+                    <audio id="id_audio">
+                        <source src="{% static generated_metronome_url %}" type="audio/wav">
+                    </audio>
+                </div>
             </div>
-            <div class="input-field col s10 no-padding no-margin-bottom margin-top-7px">
-                <input type="range" id="audioRange" min="0" max="{{ audio.max_value }}" value="0" class="margin-top-2px">
-                <audio id="id_audio">
-                    <source src="{% static generated_metronome_url %}" type="audio/wav">
-                </audio>
-            </div>
-            <div class="input-field col s2 no-padding">
-                <i class="material-icons left no-margin">volume_up</i>
-            </div>
-            <div class="input-field col s10 margin-top-2px no-padding no-margin-bottom">
-                <label for="audioVolume"></label><input type="range" id="audioVolume" value="100">
+            <div class="input-field col s12 row no-margin">
+                <div class="input-field col s2 no-padding">
+                    <i class="material-icons left no-margin">volume_up</i>
+                </div>
+                <div class="input-field col s9 l10 right margin-top-2px no-padding no-margin-bottom">
+                    <label for="audioVolume"></label><input type="range" id="audioVolume" class="" value="100">
+                </div>
             </div>
         </div>
         <form method="POST" action="{% url 'download_metronome' generated_metronome_name %}">

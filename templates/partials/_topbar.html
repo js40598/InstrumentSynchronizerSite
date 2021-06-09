@@ -1,9 +1,10 @@
+{% load static %}
 <nav class="row">
-<div class="nav-wrapper col s8 offset-s2">
-  <div class="col s1">
-    <a href="{% url 'landing' %}" class="brand-logo">Instrument Synchronizer</a>
+<div class="nav-wrapper col s12 l8 offset-l2 row">
+  <div class="col s2 l1">
+    <a href="{% url 'landing' %}" class=""><img src="{% static 'images/logo.png' %}"></a>
   </div>
-  <ul id="nav-mobile" class="right hide-on-med-and-down">
+  <ul id="nav-mobile" class="right">
     <li><a href="{% url 'synchronizerabout' %}"{% if 'synchronizer' in request.path %} class="active"{% endif %}>SYNCHRONIZER</a></li>
     <li><a href="{% url 'metronomeabout' %}"{% if 'metronome' in request.path %} class="active"{% endif %}>METRONOME</a></li>
     {% if user.is_authenticated %}
@@ -15,4 +16,3 @@
   </ul>
 </div>
 </nav>
-<br>

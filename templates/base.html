@@ -24,16 +24,16 @@
 {% include 'partials/_topbar.html' %}
 
 <div class="row">
-    <div class="row col s8 offset-s2">
-        <div class="col s2">
+    <div class="row col s12 offset-xl2 offset-l1 l10 xl8">
+        <div class="col s3 l3 xl2">
             {% if 'accounts' not in request.path %}
                 {% include 'partials/_navbar.html' %}
             {% endif %}
         </div>
-        <div class="col s10">
+        <div class="col s9 l9 xl10">
             <div class="row">
                 <div class="col s11 offset-s1 content-block">
-                    <div class="bordered-content-block">
+                    <div>
                         {% block content %}
                         {% endblock %}
                     </div>
